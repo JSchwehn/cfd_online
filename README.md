@@ -23,6 +23,8 @@ npm test
 
 Production-Build: `npm run build`, Vorschau mit `npm run preview`.
 
+Dieselbe App läuft unter [jschwehn.github.io/cfd_online](https://jschwehn.github.io/cfd_online/). Ein Push auf `main` baut sie und veröffentlicht sie.
+
 ## Spätere Server-Rechnung
 
 Die Browser-Rechnung zeigt die grobe Umströmung. Näher an CFD wäre später ein Server mit OpenFOAM: Netz in Metern, `snappyHexMesh`, instationär `pimpleFoam`, Turbulenz `kOmegaSST`, Stromlinien zurück in diese Ansicht. Jede neue Lage wäre ein neuer Job und dauert Minuten. Das ist noch nicht angebunden.
