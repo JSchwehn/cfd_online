@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Strömungs-Viewer</title>
+  </head>
+  <body>
+    <div class="app">
+      <form id="flow-form" class="panel" autocomplete="off">
+        <div class="heading">
+          <h1>Strömung</h1>
+          <span class="info-anchor">
+            <button type="button" class="info-button" aria-expanded="false" aria-label="Hinweis zur Ansicht">i</button>
+            <p class="info-pop" hidden>Modell laden und im Wind drehen. Der Wind zeigt fest in +X. Start rechnet eine grobe Luftströmung im Browser, derselbe Knopf hält sie an. Zurücksetzen löscht sie. Eine neue Lage oder Datei setzt sie ebenfalls zurück.</p>
+          </span>
+        </div>
+        <label>
+          Datei (STL, STP, STEP)
+          <input id="file" type="file" accept=".stl,.stp,.step" />
+        </label>
+        <fieldset>
+          <legend>
+            Einheit der Datei
+            <span class="info-anchor">
+              <button type="button" class="info-button" aria-expanded="false" aria-label="Hinweis zur Einheit">i</button>
+              <p class="info-pop" hidden>STL behält die Zahlen der Datei. STEP wird in die gewählte Einheit umgerechnet.</p>
+            </span>
+          </legend>
+          <label class="choice">
+            <input type="radio" name="unit" value="mm" checked />
+            Millimeter
+          </label>
+          <label class="choice">
+            <input type="radio" name="unit" value="m" />
+            Meter
+          </label>
+        </fieldset>
+        <label>
+          Wind (m/s)
+          <input id="speed" type="number" min="0" step="0.1" value="10" />
+        </label>
+        <fieldset>
+          <legend>
+            Lage im Wind
+            <span class="info-anchor">
+              <button type="button" class="info-button" aria-expanded="false" aria-label="Hinweis zur Lage">i</button>
+              <p class="info-pop" hidden>Gieren um Y, Nicken um Z, Rollen um X. Am Modell ziehen geht auch. Während der Rechnung ist das Drehkreuz ausgeblendet.</p>
+            </span>
+          </legend>
+          <label>
+            Gieren (°)
+            <input id="yaw" type="number" step="1" value="0" />
+          </label>
+          <label>
+            Nicken (°)
+            <input id="pitch" type="number" step="1" value="0" />
+          </label>
+          <label>
+            Rollen (°)
+            <input id="roll" type="number" step="1" value="0" />
+          </label>
+          <div class="choice-row">
+            <label class="choice">
+              <input id="align-face" type="checkbox" />
+              Klick richtet die Fläche in den Strom
+            </label>
+            <span class="info-anchor">
+              <button type="button" class="info-button" aria-expanded="false" aria-label="Hinweis zum Flächenklick">i</button>
+              <p class="info-pop" hidden>Die angeklickte Seite steht senkrecht zum Wind und zeigt gegen die Anströmung. Das Drehkreuz ist dabei ausgeblendet.</p>
+            </span>
+          </div>
+        </fieldset>
+        <label class="choice">
+          <input id="wireframe" type="checkbox" />
+          Gitternetz
+        </label>
+        <fieldset>
+          <legend>
+            Rechnung
+            <span class="info-anchor">
+              <button type="button" class="info-button" aria-expanded="false" aria-label="Hinweis zur Rechnung">i</button>
+              <p class="info-pop" hidden>Vereinfachen fasst nahe Punkte zusammen. 0 lässt die Datei unverändert, stärker heißt weniger Dreiecke. Dünne Stellen können verschwinden. Eine laufende Rechnung wird dabei zurückgesetzt. Modell ist BGK oder TRT. Ein Wechsel hält die Rechnung an und setzt sie zurück. TRT hält den Nachlauf klarer. Die Box ist hinter dem Teil lang und seitlich weit, damit sich Wirbel lösen können. Die Luft ist die von Normalnull, 15 °C und 1013 hPa. Das Gitter trägt die echte Reynolds-Zahl nicht, darum ist die Zähigkeit die dünnste, die hier stabil bleibt. RANS für belastbare Kräfte ist vorgemerkt und hier nicht wählbar. Auflösung gilt nach dem nächsten Start. Jede Zelle, die ein Dreieck schneidet, gehört zum Modell. Was dünner als eine Zelle ist, wird eine Zelle. Der Einlass hält die Windgeschwindigkeit, der Strom schläft nicht ein. Ausgang offen ist vorausgewählt und gilt sofort: am Kanalende strömt die Luft aus, die Stirnwand fehlt. Aus setzt dort eine Wand und zeichnet sie. Offen lässt die Quergeschwindigkeit mit hinaus, die Heatmap zeichnet dort keine Wand. Teilchen, Farbe, Mittelebene, Schweife und Heatmap ändern nur die Darstellung und gelten sofort. Farbe: blau ist geradeaus, rot ist Drehung. Mittelebene legt die Teilchen in eine horizontale Scheibe. Mittelebene 90° stellt die Teilchen allein in eine senkrechte Scheibe, auch wenn die liegende Mittelebene aus ist. Schweife zeichnen den Weg als dunkle Linie. Heatmap färbt die Wirbelstärke in dieser Ebene. Heatmap 90° stellt dieselbe Fläche senkrecht vor das Bauteil, auch allein. Teilchen, die das Bauteil treffen, bleiben an der Oberfläche liegen. Geprüft wird das erst in der Zelle des Bauteils, damit die Animation gleich schnell bleibt. Fein rechnet länger.</p>
+            </span>
+          </legend>
+          <label>
+            Vereinfachen
+            <span class="slider-row">
+              <input id="simplify" type="range" min="0" max="100" step="1" value="0" />
+              <span id="simplify-label">aus</span>
+            </span>
+          </label>
+          <label>
+            Modell
+            <select id="model">
+              <option value="bgk">BGK</option>
+              <option value="trt" selected>TRT</option>
+            </select>
+          </label>
+          <label>
+            Auflösung
+            <select id="resolution">
+              <option value="coarse">grob</option>
+              <option value="medium" selected>mittel</option>
+              <option value="fine">fein</option>
+            </select>
+          </label>
+          <label>
+            Teilchen
+            <span class="slider-row">
+              <input id="particles" type="range" min="80" max="1600" step="40" value="480" />
+              <span id="particle-count">480</span>
+            </span>
+          </label>
+          <label class="choice">
+            <input id="outlet-open" type="checkbox" checked />
+            Ausgang offen
+          </label>
+          <label class="choice">
+            <input id="turn-color" type="checkbox" />
+            Farbe nach Drehung
+          </label>
+          <label class="choice">
+            <input id="slice" type="checkbox" />
+            Mittelebene
+          </label>
+          <label class="choice">
+            <input id="slice-turn" type="checkbox" />
+            Mittelebene 90°
+          </label>
+          <label class="choice">
+            <input id="trails" type="checkbox" />
+            Schweife
+          </label>
+          <label class="choice">
+            <input id="heatmap" type="checkbox" />
+            Heatmap
+          </label>
+          <label class="choice">
+            <input id="heatmap-turn" type="checkbox" />
+            Heatmap 90°
+          </label>
+        </fieldset>
+        <div class="actions">
+          <button id="sim-toggle" type="button" disabled>Start</button>
+          <button id="sim-reset" type="button" class="secondary" disabled>Zurücksetzen</button>
+        </div>
+        <p id="status" class="status" hidden></p>
+        <p id="error" class="error" hidden></p>
+        <dl class="info">
+          <div>
+            <dt>Dreiecke</dt>
+            <dd id="triangles">–</dd>
+          </div>
+          <div>
+            <dt>X</dt>
+            <dd id="size-x">–</dd>
+          </div>
+          <div>
+            <dt>Y</dt>
+            <dd id="size-y">–</dd>
+          </div>
+          <div>
+            <dt>Z</dt>
+            <dd id="size-z">–</dd>
+          </div>
+        </dl>
+        <button id="reset-angles" type="button" class="secondary">Lage zurücksetzen</button>
+      </form>
+      <div id="viewport">
+        <button type="button" id="reset-view">Standardansicht</button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
